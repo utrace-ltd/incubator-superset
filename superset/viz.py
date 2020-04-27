@@ -646,6 +646,15 @@ class TableViz(BaseViz):
             obj, default=utils.json_iso_dttm_ser, sort_keys=sort_keys, ignore_nan=True
         )
 
+    def get_csv(self):
+        # TODO create streamed variant
+        query_obj = self.query_obj()
+        # Disable row_limit for csv export
+        query_obj["row_limit"] = None
+        df = self.get_df(query_obj)
+        include_index = not isinstance(df.index, pd.RangeIndex)
+        return df.to_csv(index=include_index, **config["CSV_EXPORT"])
+
 
 class TimeTableViz(BaseViz):
 
