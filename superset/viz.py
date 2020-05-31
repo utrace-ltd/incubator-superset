@@ -1922,6 +1922,8 @@ class FilterBoxViz(BaseViz):
             qry["groupby"] = [col]
             metric = flt.get("metric")
             qry["metrics"] = [metric] if metric else []
+            if not metric:
+                qry['orderby'] = [(col, flt.get("asc", True))]
             df = self.get_df_payload(query_obj=qry).get("df")
             self.dataframes[col] = df
 
