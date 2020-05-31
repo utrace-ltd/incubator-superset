@@ -20,7 +20,6 @@
 These objects represent the backend of all the visualizations that
 Superset can render.
 """
-import asyncio
 import copy
 import hashlib
 import inspect
@@ -1896,6 +1895,7 @@ class WorldMapViz(BaseViz):
 
 
 class FilterBoxViz(BaseViz):
+
     """A multi filter, multi-choice filter box to make dashboards interactive"""
 
     viz_type = "filter_box"
@@ -1909,33 +1909,23 @@ class FilterBoxViz(BaseViz):
         return None
 
     def run_extra_queries(self):
-        self.dataframes = {}
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(self.run_extra_queries_paralel())
-        loop.close()
-
-    async def run_extra_queries_paralel(self):
-        filters = self.form_data.get("filter_configs") or []
-        for qresult in asyncio.as_completed([self.fetch_filer_query(flt) for flt in filters]):
-            # self.dataframes[col] = await df
-            (df, col) = await qresult
-            self.dataframes[col] = df
-
-    async def fetch_filer_query(self, flt=None):
         qry = super().query_obj()
+        filters = self.form_data.get("filter_configs") or []
         qry["row_limit"] = self.filter_row_limit
-        col = flt.get("column")
-        if not col:
-            raise Exception(
-                _("Invalid filter configuration, please select a column")
-            )
-        qry["groupby"] = [col]
-        metric = flt.get("metric")
-        qry["metrics"] = [metric] if metric else []
-        if not metric:
-            qry['orderby'] = [(col, flt.get("asc", True))]
-        r = self.get_df_payload(query_obj = qry).get("df")
-        return r, col
+        self.dataframes = {}
+        for flt in filters:
+            col = flt.get("column")
+            if not col:
+                raise Exception(
+                    _("Invalid filter configuration, please select a column")
+                )
+            qry["groupby"] = [col]
+            metric = flt.get("metric")
+            qry["metrics"] = [metric] if metric else []
+            if not metric:
+                qry['orderby'] = [(col, flt.get("asc", True))]
+            df = self.get_df_payload(query_obj=qry).get("df")
+            self.dataframes[col] = df
 
     def get_data(self, df: pd.DataFrame) -> VizData:
         filters = self.form_data.get("filter_configs") or []
