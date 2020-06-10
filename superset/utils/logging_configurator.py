@@ -49,7 +49,7 @@ class DefaultLoggingConfigurator(LoggingConfigurator):
             superset_logger.addHandler(
                 logging.StreamHandler()
             )  # pylint: disable=no-member
-            superset_logger.setLevel(logging.INFO)  # pylint: disable=no-member
+            superset_logger.setLevel(app_config["LOG_LEVEL"])  # pylint: disable=no-member
 
         logging.getLogger("pyhive.presto").setLevel(logging.INFO)
 
