@@ -34,6 +34,7 @@
 @utrace-blue-lighter: lighten(@utrace-blue-darker, 70%);
 @utrace-orange: #F55A4B;
 @utrace-lightest: #ffffff;
+@utrace-navy: #00D0FF;
 
 @primary-color: @utrace-bs-blue; //#00a699;
 @indicator-color: #44c0ff;
@@ -896,17 +897,27 @@
   lighten(@utrace-blue-darker, 30%),
   lighten(@utrace-orange, 30%),
   lighten(@utrace-blue-darker, 40%),
-  lighten(@utrace-orange, 40%),
+//  lighten(@utrace-orange, 40%), //--
   lighten(@utrace-blue-darker, 50%),
-  lighten(@utrace-orange, 50%),
-  lighten(@utrace-blue-darker, 60%),
-  lighten(@utrace-orange, 60%),
-  lighten(@utrace-blue-darker, 70%),
-  lighten(@utrace-orange, 70%),
-  lighten(@utrace-blue-darker, 80%),
-  lighten(@utrace-orange, 80%),
-  lighten(@utrace-blue-darker, 90%),
-  lighten(@utrace-orange, 90%);
+//  lighten(@utrace-orange, 50%),
+  lighten(@utrace-blue-darker, 60%), //-- 13
+//  lighten(@utrace-orange, 60%),
+//  lighten(@utrace-blue-darker, 70%),
+  //lighten(@utrace-orange, 70%),
+//  lighten(@utrace-blue-darker, 80%),
+//  lighten(@utrace-orange, 80%),
+//  lighten(@utrace-blue-darker, 90%),
+//  lighten(@utrace-orange, 90%);
+    @utrace-navy,
+    lighten(@utrace-navy, 10%),
+    lighten(@utrace-navy, 20%),
+    lighten(@utrace-navy, 30%),
+    lighten(@utrace-navy, 40%),
+    lighten(@utrace-navy, 50%),
+    lighten(@utrace-navy, 60%),
+    lighten(@utrace-navy, 70%),
+    #087f5b
+    ;
 
 // @badge-colors: #228be6, #40c057, #fab005, #f76707, #e64980, #15aabf, #7950f2,
 //   #fa5252, #74b816, #12b886, #1864ab, #2b8a3e, #e67700, #d9480f, #a61e4d,
