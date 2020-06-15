@@ -534,6 +534,7 @@ class TableViz(BaseViz):
     credits = 'a <a href="https://github.com/airbnb/superset">Superset</a> original'
     is_timeseries = False
     enforce_numerical_metrics = False
+    export_csv_chunk_size = config.get("UTRACE_EXPORT_CSV_CHUNK_SIZE", 25000)
 
     def should_be_timeseries(self):
         fd = self.form_data
@@ -651,9 +652,59 @@ class TableViz(BaseViz):
         query_obj = self.query_obj()
         # Disable row_limit for csv export
         query_obj["row_limit"] = None
-        df = self.get_df(query_obj)
-        include_index = not isinstance(df.index, pd.RangeIndex)
-        return df.to_csv(index=include_index, **config["CSV_EXPORT"])
+
+        # df = self.get_df(query_obj)
+        # include_index = not isinstance(df.index, pd.RangeIndex)
+        # return df.to_csv(index=include_index, **config["CSV_EXPORT"])
+
+        dsrc = self.datasource
+        query_str_ext = dsrc.get_query_str_extended(query_obj)
+        labels = self.verbose_names(query_str_ext.labels_expected)
+        return self.get_df_streamed(query_str_ext.sql, labels, dsrc.database.get_sqla_engine(schema=dsrc.schema))
+
+    def verbose_names(self, names):
+        verbose_map = {"__timestamp": "Time"}
+        verbose_map.update(
+            {o.metric_name: o.verbose_name or o.metric_name for o in self.datasource.metrics}
+        )
+        verbose_map.update(
+            {o.column_name: o.verbose_name or o.column_name for o in self.datasource.columns}
+        )
+        verbose_names = []
+        for col_name in names:
+            verbose_names.append(verbose_map.get(col_name, col_name))
+        return verbose_names
+
+    def get_df_streamed(self, sql, labels_expected, engine) -> pd.DataFrame:
+        from contextlib import closing
+        from io import StringIO
+        # TODO formats from original get_df
+        with closing(engine.raw_connection()) as conn:
+            conn.set_session(readonly = True)
+            with closing(conn.cursor('chunked_data_export_to_csv_cursor')) as cursor:
+
+                cursor.itersize = self.export_csv_chunk_size
+                cursor.execute(sql)
+                chunk_num: int = 0
+
+                out_buf = StringIO()
+
+                header = True
+                while True:
+                    rows = cursor.fetchmany(self.export_csv_chunk_size)
+                    if len(rows) > 0:
+                        chunk_num += 1
+                        df = pd.DataFrame(rows)
+                        if header:
+                            df.columns = labels_expected
+                        out_buf.seek(0)
+                        out_buf.truncate(0)
+                        df.to_csv(out_buf, mode = 'w', header = header, **config["CSV_EXPORT"])
+                        header = False
+                        # logging.info(f"CHUNK: {chunk_num}")
+                        yield out_buf.getvalue()
+                    else:
+                        break
 
 
 class TimeTableViz(BaseViz):
