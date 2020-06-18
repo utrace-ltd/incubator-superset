@@ -198,11 +198,17 @@ class BaseDatasource(
                 (json.dumps([column_name, False]), column_name + " [desc]")
             )
 
+        # from flask_babel import Domain
+        # dashboard_domain = Domain(domain='datasource_translate')
         verbose_map = {"__timestamp": "Time"}
         verbose_map.update(
+            # {o.metric_name: dashboard_domain.pgettext(self.name, o.verbose_name) or o.metric_name
+            # for o in self.metrics}
             {o.metric_name: o.verbose_name or o.metric_name for o in self.metrics}
         )
         verbose_map.update(
+            # {o.column_name: dashboard_domain.pgettext(self.name, o.verbose_name) or o.column_name
+            # for o in self.columns}
             {o.column_name: o.verbose_name or o.column_name for o in self.columns}
         )
         return {
