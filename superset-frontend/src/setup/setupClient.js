@@ -29,7 +29,7 @@ export default function setupClient() {
 
   SupersetClient.configure({
     protocol: (window.location && window.location.protocol) || '',
-    host: (window.location && window.location.host) || '',
+    host: (window.location && window.location.host).concat(process.env.URL_SUBPATH) || '',
     csrfToken: csrfToken || cookieCSRFToken,
   })
     .init()

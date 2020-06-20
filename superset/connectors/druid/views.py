@@ -19,7 +19,7 @@ import json
 import logging
 from datetime import datetime
 
-from flask import flash, Markup, redirect
+from flask import flash, Markup, redirect, url_for
 from flask_appbuilder import CompactCRUDMixin, expose
 from flask_appbuilder.fieldwidgets import Select2Widget
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -393,7 +393,7 @@ class Druid(BaseSupersetView):
                     "info",
                 )
         session.commit()
-        return redirect("/druiddatasourcemodelview/list/")
+        return redirect(url_for("DruidDatasourceModelView.list"))
 
     @has_access
     @expose("/scan_new_datasources/")

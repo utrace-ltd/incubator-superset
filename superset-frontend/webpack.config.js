@@ -46,9 +46,11 @@ const {
 } = parsedArgs;
 const isDevMode = mode !== 'production';
 
+const URL_SUBPATH = process.env.URL_SUBPATH || '';
+
 const output = {
   path: BUILD_DIR,
-  publicPath: '/static/assets/', // necessary for lazy-loaded chunks
+  publicPath: URL_SUBPATH.concat('/static/assets/'), // necessary for lazy-loaded chunks
 };
 if (isDevMode) {
   output.filename = '[name].[hash:8].entry.js';
@@ -104,6 +106,11 @@ const plugins = [
   // expose mode variable to other modules
   new webpack.DefinePlugin({
     'process.env.WEBPACK_MODE': JSON.stringify(mode),
+  }),
+
+  // expose mode variable to other modules
+  new webpack.DefinePlugin({
+    'process.env.URL_SUBPATH': JSON.stringify(URL_SUBPATH),
   }),
 
   // runs type checking on a separate process to speed up the build

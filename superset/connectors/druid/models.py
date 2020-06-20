@@ -29,7 +29,7 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 import pandas as pd
 import sqlalchemy as sa
 from dateutil.parser import parse as dparse
-from flask import escape, Markup
+from flask import escape, Markup, url_for
 from flask_appbuilder import Model
 from flask_appbuilder.models.decorators import renders
 from flask_appbuilder.security.sqla.models import User
@@ -48,7 +48,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import backref, relationship, Session
 from sqlalchemy_utils import EncryptedType
 
-from superset import conf, db, security_manager
+from superset import conf, db, security_manager, app
 from superset.connectors.base.models import BaseColumn, BaseDatasource, BaseMetric
 from superset.constants import NULL_STRING
 from superset.exceptions import SupersetException
@@ -478,7 +478,7 @@ class DruidDatasource(Model, BaseDatasource):
     column_class = DruidColumn
     owner_class = security_manager.user_model
 
-    baselink = "druiddatasourcemodelview"
+    baselink = app.config['URL_SUBPATH'] + "druiddatasourcemodelview"
 
     # Columns
     datasource_name = Column(String(255), nullable=False)
@@ -592,7 +592,7 @@ class DruidDatasource(Model, BaseDatasource):
 
     @renders("datasource_name")
     def datasource_link(self) -> str:
-        url = f"/superset/explore/{self.type}/{self.id}/"
+        url = url_for("Superset.explore",datasource_type=self.type,datasource_id=self.id)
         name = escape(self.datasource_name)
         return Markup(f'<a href="{url}">{name}</a>')
 

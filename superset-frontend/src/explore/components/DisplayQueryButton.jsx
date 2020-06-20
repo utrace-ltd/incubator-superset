@@ -212,7 +212,7 @@ export class DisplayQueryButton extends React.PureComponent {
         <img
           className="loading"
           alt="Loading..."
-          src="/static/assets/images/loading.gif"
+          src={process.env.URL_SUBPATH.concat("/static/assets/images/loading.gif")}
         />
       );
     } else if (this.state.error) {

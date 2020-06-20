@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING
 from urllib import parse
 
 import sqlalchemy as sqla
+from flask import url_for
 from flask_appbuilder import Model
 from flask_appbuilder.models.decorators import renders
 from flask_appbuilder.security.sqla.models import User
@@ -158,12 +159,11 @@ class Dashboard(  # pylint: disable=too-many-instance-attributes
                 try:
                     if json.loads(default_filters):
                         filters = parse.quote(default_filters.encode("utf8"))
-                        return "/superset/dashboard/{}/?preselect_filters={}".format(
-                            self.slug or self.id, filters
-                        )
+                        return url_for("Superset.dashboard", dashboard_id=(self.slug or self.id)) + \
+                                       "/?preselect_filters={}".format(filters)
                 except Exception:  # pylint: disable=broad-except
                     pass
-        return f"/superset/dashboard/{self.slug or self.id}/"
+        return url_for("Superset.dashboard", dashboard_id=(self.slug or self.id)) + "/"
 
     @property
     def datasources(self) -> Set[Optional["BaseDatasource"]]:
@@ -194,7 +194,7 @@ class Dashboard(  # pylint: disable=too-many-instance-attributes
     def changed_by_url(self):
         if not self.changed_by:
             return ""
-        return f"/superset/profile/{self.changed_by.username}"
+        return url_for("Superset.profile", username=self.changed_by.username)
 
     @property
     def data(self) -> Dict[str, Any]:

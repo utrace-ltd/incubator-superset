@@ -24,7 +24,7 @@ from typing import Any, Dict, Hashable, List, NamedTuple, Optional, Tuple, Union
 import pandas as pd
 import sqlalchemy as sa
 import sqlparse
-from flask import escape, Markup
+from flask import escape, Markup, url_for
 from flask_appbuilder import Model
 from flask_babel import lazy_gettext as _
 from sqlalchemy import (
@@ -389,7 +389,7 @@ class SqlaTable(Model, BaseDatasource):
     is_sqllab_view = Column(Boolean, default=False)
     template_params = Column(Text)
 
-    baselink = "tablemodelview"
+    baselink = app.config['URL_SUBPATH'] + "/tablemodelview"
 
     export_fields = [
         "table_name",
@@ -450,7 +450,7 @@ class SqlaTable(Model, BaseDatasource):
     def changed_by_url(self) -> str:
         if not self.changed_by:
             return ""
-        return f"/superset/profile/{self.changed_by.username}"
+        return url_for("Superset.profile", username=self.changed_by.username)
 
     @property
     def connection(self) -> str:

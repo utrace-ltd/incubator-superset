@@ -16,7 +16,7 @@
 # under the License.
 import re
 
-from flask import g, redirect, request, Response
+from flask import g, redirect, request, Response, url_for
 from flask_appbuilder import expose
 from flask_appbuilder.actions import action
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -64,7 +64,7 @@ class DashboardModelView(
         if not isinstance(items, list):
             items = [items]
         ids = "".join("&id={}".format(d.id) for d in items)
-        return redirect("/dashboard/export_dashboards_form?{}".format(ids[1:]))
+        return redirect(url_for("DashboardModelView.download_dashboards") + "?{}".format(ids[1:]))
 
     @event_logger.log_this
     @has_access
@@ -105,14 +105,14 @@ class Dashboard(BaseSupersetView):
 
     @has_access
     @expose("/new/")
-    def new(self):  # pylint: disable=no-self-use
+    def new(self):  # pylint: disable=no-self-usepr
         """Creates a new, blank dashboard and redirects to it in edit mode"""
         new_dashboard = models.Dashboard(
             dashboard_title="[ untitled dashboard ]", owners=[g.user]
         )
         db.session.add(new_dashboard)
         db.session.commit()
-        return redirect(f"/superset/dashboard/{new_dashboard.id}/?edit=true")
+        return redirect(url_for("Superset.dashboard", dashboard_id=new_dashboard.id) + "/?edit=true")
 
 
 class DashboardModelViewAsync(DashboardModelView):  # pylint: disable=too-many-ancestors

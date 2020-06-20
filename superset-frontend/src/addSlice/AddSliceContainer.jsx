@@ -54,7 +54,7 @@ export default class AddSliceContainer extends React.PureComponent {
         datasource: this.state.datasourceValue,
       }),
     );
-    return `/superset/explore/?form_data=${formData}`;
+    return process.env.URL_SUBPATH.concat(`/superset/explore/?form_data=${formData}`);
   }
 
   gotoSlice() {

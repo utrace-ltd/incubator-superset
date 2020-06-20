@@ -20,6 +20,7 @@ from typing import Any, Dict, Optional, Type, TYPE_CHECKING
 from urllib import parse
 
 import sqlalchemy as sqla
+from flask import url_for
 from flask_appbuilder import Model
 from flask_appbuilder.models.decorators import renders
 from markupsafe import escape, Markup
@@ -203,7 +204,7 @@ class Slice(
         form_data = {"slice_id": self.id}
         form_data.update(overrides)
         params = parse.quote(json.dumps(form_data))
-        return f"{base_url}/?form_data={params}"
+        return url_for("SupersetIndexView.index") + f"{base_url}/?form_data={params}"
 
     @property
     def slice_url(self) -> str:
@@ -217,7 +218,7 @@ class Slice(
 
     @property
     def edit_url(self) -> str:
-        return f"/chart/edit/{self.id}"
+        return url_for("SliceModelView.edit", pk=self.id)
 
     @property
     def chart(self) -> str:
@@ -230,7 +231,7 @@ class Slice(
 
     @property
     def changed_by_url(self) -> str:
-        return f"/superset/profile/{self.created_by.username}"
+        return url_for("Superset.profile", username=self.created_by.username)
 
     @property
     def icons(self) -> str:
@@ -288,7 +289,7 @@ class Slice(
 
     @property
     def url(self) -> str:
-        return f"/superset/explore/?form_data=%7B%22slice_id%22%3A%20{self.id}%7D"
+        return url_for("Superset.explore") + f"/?form_data=%7B%22slice_id%22%3A%20{self.id}%7D"
 
 
 def set_related_perm(mapper, connection, target):

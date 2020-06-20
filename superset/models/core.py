@@ -28,7 +28,7 @@ import numpy
 import pandas as pd
 import sqlalchemy as sqla
 import sqlparse
-from flask import g, request
+from flask import g, request, url_for
 from flask_appbuilder import Model
 from sqlalchemy import (
     Boolean,
@@ -616,7 +616,7 @@ class Database(
 
     @property
     def sql_url(self) -> str:
-        return f"/superset/sql/{self.id}/"
+        return url_for("SupersetIndexView.index") + f"/superset/sql/{self.id}/"
 
     def get_perm(self) -> str:
         return f"[{self.database_name}].(id:{self.id})"

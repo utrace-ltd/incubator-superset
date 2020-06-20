@@ -21,7 +21,7 @@ from datetime import datetime
 # pylint: disable=ungrouped-imports
 import simplejson as json
 import sqlalchemy as sqla
-from flask import Markup
+from flask import Markup, url_for
 from flask_appbuilder import Model
 from sqlalchemy import (
     Boolean,
@@ -172,7 +172,7 @@ class SavedQuery(Model, AuditMixinNullable, ExtraJSONMixin):
     def pop_tab_link(self):
         return Markup(
             f"""
-            <a href="/superset/sqllab?savedQueryId={self.id}">
+            <a href="{ url_for("Superset.sqllab") }?savedQueryId={self.id}">
                 <i class="fa fa-link"></i>
             </a>
         """
@@ -187,7 +187,7 @@ class SavedQuery(Model, AuditMixinNullable, ExtraJSONMixin):
         return self.database.sqlalchemy_uri
 
     def url(self):
-        return "/superset/sqllab?savedQueryId={0}".format(self.id)
+        return url_for("Superset.sqllab") + "?savedQueryId={0}".format(self.id)
 
 
 class TabState(Model, AuditMixinNullable, ExtraJSONMixin):

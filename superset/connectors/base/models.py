@@ -17,11 +17,13 @@
 import json
 from typing import Any, Dict, Hashable, List, Optional, Type
 
+from flask import url_for
 from flask_appbuilder.security.sqla.models import User
 from sqlalchemy import and_, Boolean, Column, Integer, String, Text
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import foreign, Query, relationship
 
+from superset.app import SupersetIndexView
 from superset.constants import NULL_STRING
 from superset.models.helpers import AuditMixinNullable, ImportMixin, QueryResult
 from superset.models.slice import Slice
@@ -153,7 +155,7 @@ class BaseDatasource(
     def explore_url(self) -> str:
         if self.default_endpoint:
             return self.default_endpoint
-        return f"/superset/explore/{self.type}/{self.id}/"
+        return url_for("Superset.explore", datasource_type=self.type, datasource_id=self.id)
 
     @property
     def column_formats(self) -> Dict[str, Optional[str]]:

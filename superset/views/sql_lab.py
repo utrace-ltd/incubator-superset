@@ -17,7 +17,7 @@
 from typing import Callable
 
 import simplejson as json
-from flask import g, redirect, request, Response
+from flask import g, redirect, request, Response, url_for
 from flask_appbuilder import expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import has_access, has_access_api
@@ -334,4 +334,4 @@ class SqlLab(BaseSupersetView):
     @has_access
     def my_queries(self):  # pylint: disable=no-self-use
         """Assigns a list of found users to the given role."""
-        return redirect("/savedqueryview/list/?_flt_0_user={}".format(g.user.id))
+        return redirect(url_for("SavedQueryView.list") + "/?_flt_0_user={}".format(g.user.id))

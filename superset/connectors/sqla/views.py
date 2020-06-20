@@ -19,7 +19,7 @@
 import logging
 import re
 
-from flask import flash, Markup, redirect
+from flask import flash, Markup, redirect, url_for
 from flask_appbuilder import CompactCRUDMixin, expose
 from flask_appbuilder.actions import action
 from flask_appbuilder.fieldwidgets import Select2Widget
@@ -430,7 +430,7 @@ class TableModelView(DatasourceModelView, DeleteMixin, YamlExportMixin):
         resp = super(TableModelView, self).edit(pk)
         if isinstance(resp, str):
             return resp
-        return redirect("/superset/explore/table/{}/".format(pk))
+        return redirect(url_for("Superset.explore", datasource_type='table', datasource_id=pk))
 
     @action(
         "refresh", __("Refresh Metadata"), __("Refresh column metadata"), "fa-refresh"
@@ -460,7 +460,7 @@ class TableModelView(DatasourceModelView, DeleteMixin, YamlExportMixin):
             )
             flash(failure_msg, "danger")
 
-        return redirect("/tablemodelview/list/")
+        return redirect(url_for("TableModelView.list"))
 
     @expose("/list/")
     @has_access

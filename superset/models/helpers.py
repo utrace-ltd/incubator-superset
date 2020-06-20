@@ -27,7 +27,7 @@ import humanize
 import pandas as pd
 import sqlalchemy as sa
 import yaml
-from flask import escape, g, Markup
+from flask import escape, g, Markup, url_for
 from flask_appbuilder.models.decorators import renders
 from flask_appbuilder.models.mixins import AuditMixin
 from sqlalchemy import and_, or_, UniqueConstraint
@@ -308,7 +308,7 @@ class ImportMixin:
 def _user_link(user):  # pylint: disable=no-self-use
     if not user:
         return ""
-    url = "/superset/profile/{}/".format(user.username)
+    url = url_for("Superset.profile", username=user.username)
     return Markup('<a href="{}">{}</a>'.format(url, escape(user) or ""))
 
 

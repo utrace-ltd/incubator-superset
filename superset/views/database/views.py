@@ -18,7 +18,7 @@ import os
 import tempfile
 from typing import TYPE_CHECKING
 
-from flask import flash, g, redirect
+from flask import flash, g, redirect, url_for
 from flask_appbuilder import SimpleFormView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_babel import lazy_gettext as _
@@ -119,7 +119,7 @@ class CsvToDatabaseView(SimpleFormView):
                 schema_name=schema_name,
             )
             flash(message, "danger")
-            return redirect("/csvtodatabaseview/form")
+            return redirect(url_for("CsvToDatabaseView.form"))
 
         csv_filename = form.csv_file.data.filename
         extension = os.path.splitext(csv_filename)[1].lower()
@@ -176,7 +176,7 @@ class CsvToDatabaseView(SimpleFormView):
 
             flash(message, "danger")
             stats_logger.incr("failed_csv_upload")
-            return redirect("/csvtodatabaseview/form")
+            return redirect(url_for("CsvToDatabaseView.form"))
 
         os.remove(path)
         # Go back to welcome page / splash screen
@@ -189,4 +189,4 @@ class CsvToDatabaseView(SimpleFormView):
         )
         flash(message, "info")
         stats_logger.incr("successful_csv_upload")
-        return redirect("/tablemodelview/list/")
+        return redirect(SqlaTable.baselink + "/list/")

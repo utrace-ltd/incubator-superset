@@ -19,7 +19,7 @@ import logging
 import os
 
 import wtforms_json
-from flask import Flask, redirect
+from flask import Flask, redirect, url_for
 from flask_appbuilder import expose, IndexView
 from flask_babel import gettext as __, lazy_gettext as _
 from flask_compress import Compress
@@ -69,7 +69,7 @@ def create_app():
 class SupersetIndexView(IndexView):
     @expose("/")
     def index(self):
-        return redirect("/superset/welcome")
+        return redirect(url_for('Superset.welcome'))
 
 
 class SupersetAppInitializer:
@@ -217,7 +217,7 @@ class SupersetAppInitializer:
         appbuilder.add_link(
             "Tables",
             label=__("Tables"),
-            href="/tablemodelview/list/?_flt_1_is_sqllab_view=y",
+            href=self.config.get("URL_SUBPATH","") + "/tablemodelview/list/?_flt_1_is_sqllab_view=y",
             icon="fa-table",
             category="Sources",
             category_label=__("Sources"),
@@ -301,7 +301,7 @@ class SupersetAppInitializer:
         appbuilder.add_link(
             "Import Dashboards",
             label=__("Import Dashboards"),
-            href="/superset/import_dashboards",
+            href=self.config.get("URL_SUBPATH","") + "/superset/import_dashboards",
             icon="fa-cloud-upload",
             category="Manage",
             category_label=__("Manage"),
@@ -310,7 +310,7 @@ class SupersetAppInitializer:
         appbuilder.add_link(
             "SQL Editor",
             label=_("SQL Editor"),
-            href="/superset/sqllab",
+            href=self.config.get("URL_SUBPATH","") + "/superset/sqllab",
             category_icon="fa-flask",
             icon="fa-flask",
             category="SQL Lab",
@@ -318,14 +318,14 @@ class SupersetAppInitializer:
         )
         appbuilder.add_link(
             __("Saved Queries"),
-            href="/sqllab/my_queries/",
+            href=self.config.get("URL_SUBPATH","") + "/sqllab/my_queries/",
             icon="fa-save",
             category="SQL Lab",
         )
         appbuilder.add_link(
             "Query Search",
             label=_("Query Search"),
-            href="/superset/sqllab#search",
+            href=self.config.get("URL_SUBPATH","") + "/superset/sqllab#search",
             icon="fa-search",
             category_icon="fa-flask",
             category="SQL Lab",
@@ -334,7 +334,7 @@ class SupersetAppInitializer:
         appbuilder.add_link(
             "Upload a CSV",
             label=__("Upload a CSV"),
-            href="/csvtodatabaseview/form",
+            href=self.config.get("URL_SUBPATH","") + "/csvtodatabaseview/form",
             icon="fa-upload",
             category="Sources",
             category_label=__("Sources"),
@@ -420,7 +420,7 @@ class SupersetAppInitializer:
                 appbuilder.add_link(
                     "Scan New Datasources",
                     label=__("Scan New Datasources"),
-                    href="/druid/scan_new_datasources/",
+                    href=self.config.get("URL_SUBPATH","") + "/druid/scan_new_datasources/",
                     category="Sources",
                     category_label=__("Sources"),
                     category_icon="fa-database",
@@ -429,7 +429,7 @@ class SupersetAppInitializer:
                 appbuilder.add_link(
                     "Refresh Druid Metadata",
                     label=__("Refresh Druid Metadata"),
-                    href="/druid/refresh_datasources/",
+                    href=self.config.get("URL_SUBPATH","") + "/druid/refresh_datasources/",
                     category="Sources",
                     category_label=__("Sources"),
                     category_icon="fa-database",

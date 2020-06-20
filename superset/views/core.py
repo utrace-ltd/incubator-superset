@@ -28,7 +28,7 @@ import msgpack
 import pandas as pd
 import pyarrow as pa
 import simplejson as json
-from flask import abort, flash, g, Markup, redirect, render_template, request, Response
+from flask import abort, flash, g, Markup, redirect, render_template, request, Response, url_for
 from flask_appbuilder import expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.decorators import has_access, has_access_api
@@ -116,6 +116,7 @@ from .utils import (
     get_form_data,
     get_viz,
 )
+from ..app import SupersetIndexView
 
 config = app.config
 CACHE_DEFAULT_TIMEOUT = config["CACHE_DEFAULT_TIMEOUT"]
@@ -340,7 +341,7 @@ class R(BaseSupersetView):
     def index(self, url_id):
         url = db.session.query(models.Url).get(url_id)
         if url and url.url:
-            explore_url = "//superset/explore/?"
+            explore_url = url_for("Superset.explore") + "/?"
             if url.url.startswith(explore_url):
                 explore_url += f"r={url_id}"
                 return redirect(explore_url[1:])
@@ -348,7 +349,7 @@ class R(BaseSupersetView):
                 return redirect(url.url[1:])
         else:
             flash("URL to nowhere...", "danger")
-            return redirect("/")
+            return redirect(url_for("SupersetIndexView.index"))
 
     @event_logger.log_this
     @has_access_api
@@ -359,9 +360,8 @@ class R(BaseSupersetView):
         db.session.add(obj)
         db.session.commit()
         return Response(
-            "{scheme}://{request.headers[Host]}/r/{obj.id}".format(
-                scheme=request.scheme, request=request, obj=obj
-            ),
+            url_for("R.index", url_id=obj.id)
+            ,
             mimetype="text/plain",
         )
 
@@ -456,7 +456,7 @@ class Superset(BaseSupersetView):
             )
         )
         if has_access:
-            return redirect("/superset/dashboard/{}".format(dashboard_id))
+            return redirect(url_for("Superset.dashboard", dashboard_id=dashboard_id))
 
         if request.args.get("action") == "go":
             for datasource in datasources:
@@ -466,7 +466,7 @@ class Superset(BaseSupersetView):
                 db.session.add(access_request)
                 db.session.commit()
             flash(__("Access was requested"), "info")
-            return redirect("/")
+            return redirect(url_for("SupersetIndexView.index"))
 
         return self.render_template(
             "superset/request_access.html",
@@ -571,11 +571,11 @@ class Superset(BaseSupersetView):
             clean_fulfilled_requests(session)
         else:
             flash(__("You have no permission to approve this request"), "danger")
-            return redirect("/accessrequestsmodelview/list/")
+            return redirect(url_for("AccessRequestsModelView.list"))
         for r in requests:
             session.delete(r)
         session.commit()
-        return redirect("/accessrequestsmodelview/list/")
+        return redirect(url_for("AccessRequestsModelView.list"))
 
     @has_access
     @expose("/slice/<slice_id>/")
@@ -583,7 +583,7 @@ class Superset(BaseSupersetView):
         form_data, slc = get_form_data(slice_id, use_slice_data=True)
         if not slc:
             abort(404)
-        endpoint = "/superset/explore/?form_data={}".format(
+        endpoint = url_for("Superset.explore") + "/?form_data={}".format(
             parse.quote(json.dumps({"slice_id": slice_id}))
         )
         param = utils.ReservedUrlParameters.STANDALONE.value
@@ -746,7 +746,7 @@ class Superset(BaseSupersetView):
                     ),
                     "danger",
                 )
-            return redirect("/dashboard/list/")
+            return redirect(url_for("Dashboard.list"))
         return self.render_template("superset/import_dashboards.html")
 
     @event_logger.log_this
@@ -772,7 +772,7 @@ class Superset(BaseSupersetView):
                 )
             )
         ):
-            url = Href("/superset/explore/")(
+            url = Href(url_for("Superset.explore") + "/")(
                 {
                     "form_data": json.dumps(
                         {
@@ -788,7 +788,7 @@ class Superset(BaseSupersetView):
 
             flash(Markup(config["SIP_15_TOAST_MESSAGE"].format(url=url)))
 
-        error_redirect = "/chart/list/"
+        error_redirect = url_for("SliceModelView.list")
         try:
             datasource_id, datasource_type = get_datasource_info(
                 datasource_id, datasource_type, form_data
@@ -810,8 +810,7 @@ class Superset(BaseSupersetView):
                 __(security_manager.get_datasource_access_error_msg(datasource)),
                 "danger",
             )
-            return redirect(
-                "superset/request_access/?"
+            return redirect(url_for("Superset.request_access") + "/?"
                 f"datasource_type={datasource_type}&"
                 f"datasource_id={datasource_id}&"
             )
@@ -1506,7 +1505,7 @@ class Superset(BaseSupersetView):
             if o.Dashboard.created_by:
                 user = o.Dashboard.created_by
                 d["creator"] = str(user)
-                d["creator_url"] = "/superset/profile/{}/".format(user.username)
+                d["creator_url"] = url_for("Superset.profile", username=user.username)
             payload.append(d)
         return json_success(json.dumps(payload, default=utils.json_int_dttm_ser))
 
@@ -1631,7 +1630,7 @@ class Superset(BaseSupersetView):
             if o.Slice.created_by:
                 user = o.Slice.created_by
                 d["creator"] = str(user)
-                d["creator_url"] = "/superset/profile/{}/".format(user.username)
+                d["creator_url"] = url_for("Superset.profile", username=user.username)
             payload.append(d)
         return json_success(json.dumps(payload, default=utils.json_int_dttm_ser))
 
@@ -1808,8 +1807,8 @@ class Superset(BaseSupersetView):
                         ),
                         "danger",
                     )
-                    return redirect(
-                        "superset/request_access/?" f"dashboard_id={dash.id}&"
+                    return redirect(url_for(Superset.request_access) +
+                        "/?" f"dashboard_id={dash.id}&"
                     )
 
         # Filter out unneeded fields from the datasource payload
@@ -2480,7 +2479,7 @@ class Superset(BaseSupersetView):
         )
         if rejected_tables:
             flash(security_manager.get_table_access_error_msg(rejected_tables))
-            return redirect("/")
+            return redirect(url_for("SupersetIndexView.index"))
         blob = None
         if results_backend and query.results_key:
             logger.info(

@@ -71,7 +71,7 @@ describe('logger middleware', () => {
     clock.tick(2000);
     expect(SupersetClient.post.callCount).toBe(1);
     expect(SupersetClient.post.getCall(0).args[0].endpoint).toMatch(
-      '/superset/log/',
+      process.env.URL_SUBPATH.concat('/superset/log/'),
     );
   });
 
