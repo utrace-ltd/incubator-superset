@@ -160,10 +160,10 @@ class Dashboard(  # pylint: disable=too-many-instance-attributes
                     if json.loads(default_filters):
                         filters = parse.quote(default_filters.encode("utf8"))
                         return url_for("Superset.dashboard", dashboard_id=(self.slug or self.id)) + \
-                                       "/?preselect_filters={}".format(filters)
+                                       "?preselect_filters={}".format(filters)
                 except Exception:  # pylint: disable=broad-except
                     pass
-        return url_for("Superset.dashboard", dashboard_id=(self.slug or self.id)) + "/"
+        return url_for("Superset.dashboard", dashboard_id=(self.slug or self.id))
 
     @property
     def datasources(self) -> Set[Optional["BaseDatasource"]]:
