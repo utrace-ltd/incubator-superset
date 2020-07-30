@@ -334,4 +334,4 @@ class SqlLab(BaseSupersetView):
     @has_access
     def my_queries(self):  # pylint: disable=no-self-use
         """Assigns a list of found users to the given role."""
-        return redirect(url_for("SavedQueryView.list") + "/?_flt_0_user={}".format(g.user.id))
+        return redirect(url_for("SavedQueryView.list") + "?_flt_0_user={}".format(g.user.id))

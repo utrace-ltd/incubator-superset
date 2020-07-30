@@ -289,7 +289,7 @@ class Slice(
 
     @property
     def url(self) -> str:
-        return url_for("Superset.explore") + f"/?form_data=%7B%22slice_id%22%3A%20{self.id}%7D"
+        return url_for("Superset.explore") + f"?form_data=%7B%22slice_id%22%3A%20{self.id}%7D"
 
 
 def set_related_perm(mapper, connection, target):

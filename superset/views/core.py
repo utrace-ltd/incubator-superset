@@ -341,7 +341,7 @@ class R(BaseSupersetView):
     def index(self, url_id):
         url = db.session.query(models.Url).get(url_id)
         if url and url.url:
-            explore_url = url_for("Superset.explore") + "/?"
+            explore_url = url_for("Superset.explore") + "?"
             if url.url.startswith(explore_url):
                 explore_url += f"r={url_id}"
                 return redirect(explore_url[1:])
@@ -583,7 +583,7 @@ class Superset(BaseSupersetView):
         form_data, slc = get_form_data(slice_id, use_slice_data=True)
         if not slc:
             abort(404)
-        endpoint = url_for("Superset.explore") + "/?form_data={}".format(
+        endpoint = url_for("Superset.explore") + "?form_data={}".format(
             parse.quote(json.dumps({"slice_id": slice_id}))
         )
         param = utils.ReservedUrlParameters.STANDALONE.value
@@ -810,7 +810,7 @@ class Superset(BaseSupersetView):
                 __(security_manager.get_datasource_access_error_msg(datasource)),
                 "danger",
             )
-            return redirect(url_for("Superset.request_access") + "/?"
+            return redirect(url_for("Superset.request_access") + "?"
                 f"datasource_type={datasource_type}&"
                 f"datasource_id={datasource_id}&"
             )
@@ -1808,7 +1808,7 @@ class Superset(BaseSupersetView):
                         "danger",
                     )
                     return redirect(url_for(Superset.request_access) +
-                        "/?" f"dashboard_id={dash.id}&"
+                        f"?dashboard_id={dash.id}&"
                     )
 
         # Filter out unneeded fields from the datasource payload
