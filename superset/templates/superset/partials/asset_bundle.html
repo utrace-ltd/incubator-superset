@@ -21,7 +21,7 @@
      with development version #}
   <!-- Bundle js {{ filename }} START -->
   {% for entry in js_manifest(filename) %}
-    <script src="{{ appbuilder.app.config['URL_SUBPATH'] + entry }}"></script>
+    <script src="{{ entry }}"></script>
   {% endfor %}
   <!-- Bundle js {{ filename }} END -->
 {% endmacro %}
@@ -29,7 +29,7 @@
 {% macro css_bundle(filename) %}
   <!-- Bundle css {{ filename }} START -->
   {% for entry in css_manifest(filename) %}
-    <link rel="stylesheet" type="text/css" href="{{ appbuilder.app.config['URL_SUBPATH'] + entry }}" />
+    <link rel="stylesheet" type="text/css" href="{{ entry }}" />
   {% endfor %}
   <!-- Bundle css {{ filename }} END -->
 {% endmacro %}
