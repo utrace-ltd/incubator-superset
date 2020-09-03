@@ -33,8 +33,11 @@ import { getDashboardFilterKey } from '../../dashboard/util/getDashboardFilterKe
 import { getFilterColorMap } from '../../dashboard/util/dashboardFiltersColorMap';
 import { TIME_FILTER_LABELS } from '../../explore/constants';
 import FilterBadgeIcon from '../../components/FilterBadgeIcon';
+import Dimensions from 'react-dimensions'
 
 import './FilterBox.less';
+
+const avgWidthOfSymbol = 9;
 
 // maps control names to their key in extra_filters
 export const TIME_FILTER_MAP = {
@@ -228,7 +231,7 @@ class FilterBox extends React.Component {
   renderSelect(filterConfig) {
     const { filtersChoices } = this.props;
     const { selectedValues } = this.state;
-
+    
     // Add created options to filtersChoices, even though it doesn't exist,
     // or these options will exist in query sql but invisible to end user.
     Object.keys(selectedValues)
@@ -284,6 +287,23 @@ class FilterBox extends React.Component {
           };
           return { value: opt.id, label: opt.id, style };
         })}
+        optionHeight={({ option }) => 
+          {
+            var rows = 0;
+            if(option.label != null) {
+              const symPerLyne = this.props.containerWidth / avgWidthOfSymbol;
+              const words = option.label.split(/[.,\/ -]/);
+              var curlen = 0;
+              for(var i = 0; i < words.length; i++){
+                if((curlen + words[i].length) >= symPerLyne) {
+                  rows++;
+                  curlen = words[i].length;  
+                } else curlen += words[i].length + 1;
+              } 
+              if(curlen >= 0) rows++;
+            }
+            return 17 * Math.max(2,rows) + 6;  
+        }}
         onChange={(...args) => {
           this.changeFilter(key, ...args);
         }}
@@ -357,4 +377,5 @@ class FilterBox extends React.Component {
 FilterBox.propTypes = propTypes;
 FilterBox.defaultProps = defaultProps;
 
-export default FilterBox;
+// export default FilterBox;
+export default Dimensions()(FilterBox) // Enhanced component
