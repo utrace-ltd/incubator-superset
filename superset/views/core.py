@@ -746,7 +746,7 @@ class Superset(BaseSupersetView):
                     ),
                     "danger",
                 )
-            return redirect(url_for("Dashboard.list"))
+            return redirect(url_for("DashboardModelView.list"))
         return self.render_template("superset/import_dashboards.html")
 
     @event_logger.log_this
