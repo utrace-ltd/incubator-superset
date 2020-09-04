@@ -328,10 +328,11 @@ class DashboardList extends React.PureComponent<Props, State> {
   };
 
   handleBulkDashboardExport = (dashboards: Dashboard[]) => {
+    const subUrl = `/api/v1/dashboard/export/?q=!(${dashboards
+            .map(({ id }) => id)
+            .join(',')})`;
     return window.location.assign(
-      `/api/v1/dashboard/export/?q=!(${dashboards
-        .map(({ id }) => id)
-        .join(',')})`,
+        (process.env.URL_SUBPATH || '').concat(subUrl),
     );
   };
 

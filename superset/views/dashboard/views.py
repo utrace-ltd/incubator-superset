@@ -78,7 +78,7 @@ class DashboardModelView(
                 mimetype="application/text",
             )
         return self.render_template(
-            "superset/export_dashboards.html", dashboards_url="/dashboard/list"
+            "superset/export_dashboards.html", dashboards_url=url_for("DashboardModelView.list")
         )
 
     def pre_add(self, item):

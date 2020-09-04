@@ -1211,8 +1211,8 @@ class Superset(BaseSupersetView):
 
         self._set_dash_metadata(dash, data, old_to_new_slice_ids)
         session.add(dash)
-        session.commit()
         dash_json = json.dumps(dash.data)
+        session.commit()
         session.close()
         return json_success(dash_json)
 
