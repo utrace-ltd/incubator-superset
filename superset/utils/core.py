@@ -583,14 +583,14 @@ class timeout:
         try:
             signal.signal(signal.SIGALRM, self.handle_timeout)
             signal.alarm(self.seconds)
-        except ValueError as e:
+        except (ValueError, AttributeError) as e:
             logger.warning("timeout can't be used in the current context")
             logger.exception(e)
 
     def __exit__(self, type, value, traceback):
         try:
             signal.alarm(0)
-        except ValueError as e:
+        except (ValueError, AttributeError) as e:
             logger.warning("timeout can't be used in the current context")
             logger.exception(e)
 
