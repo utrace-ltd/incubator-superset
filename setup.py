@@ -76,7 +76,7 @@ setup(
         "croniter>=0.3.28",
         "cryptography>=2.4.2",
         "flask>=1.1.0, <2.0.0",
-        "flask-appbuilder>=2.3.1, <2.4.0",
+        "flask-appbuilder>=3.1.1",
         "flask-caching",
         "flask-compress",
         "flask-talisman",
@@ -104,6 +104,7 @@ setup(
         "sqlalchemy-utils>=0.33.2",
         "sqlparse>=0.3.0, <0.4",
         "wtforms-json",
+        "idna>=2.5, <3"
     ],
     extras_require={
         "bigquery": ["pybigquery>=0.4.10", "pandas_gbq>=0.10.0"],
